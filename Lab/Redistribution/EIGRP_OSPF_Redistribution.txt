@@ -1,0 +1,16 @@
+R5
+!
+ ip ospf 1 area 2
+ ip ospf 1 area 2
+router ospf 1
+ router-id 0.0.0.5
+ area 2 nssa
+ summary-address 131.111.0.0 255.255.254.0
+ redistribute connected subnets
+ redistribute eigrp 100 metric-type 1 subnets
+ distribute-list 10 out eigrp 100
+! access-control list 10 only permits 131.111.0.0/23 and deny anything else
+ip access-list standard 10
+permit 131.111.0.0 0.0.1.255
+!
+
