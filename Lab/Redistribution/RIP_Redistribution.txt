@@ -1,0 +1,11 @@
+! creating a prefix-list that matches CLASS A addresses
+ip prefix-list CLASS_A permit 0.0.0.0/1 ge 8 le 32
+!
+! creating a route-map that matches the prefix-list and set RIP metric to 4
+route-map CLASS_A permit 10
+ match ip address prefix-list CLASS_A
+ set metric 4
+! matching everything
+route-map CLASS_A permit 20
+ set metric 6
+! 
