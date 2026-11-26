@@ -9,3 +9,22 @@ route-map CLASS_A permit 10
 route-map CLASS_A permit 20
  set metric 6
 ! 
+
+! NSSA blocks type 5 external LSA
+! ASBR converts type 5 external LSA into type 7 external LSA
+! NSSA routers would need default-route if they want to have reachability to the network distributed by other routers
+
+area 2 nssa default-information-orignate
+
+! ip prefix-list permitting any /24 addresses
+! 0.0.0.0/0 doesn't care any addresses use ge and le to define the subnet mask
+ip prefix-list ANY24 seq 10 permit 0.0.0.0/0 ge 24 le 24
+
+! ip prefix-list permitting any /30 addresses
+! 0.0.0.0/0 doesn't care any addresses use ge and le to define the subnet mask
+ip prefix-list ANY24 seq 10 permit 0.0.0.0/0 ge 30 le 30
+
+! any routers that get redistributed in the future get hop count 6 in RIP
+router rip
+ default-metric 6
+!
