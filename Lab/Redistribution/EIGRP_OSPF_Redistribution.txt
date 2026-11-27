@@ -13,4 +13,28 @@ router ospf 1
 ip access-list standard 10
 permit 131.111.0.0 0.0.1.255
 !
-
+! using route-map to match against the OSPF route-type
+!
+route-map OSPF_TO_EIGRP permit 10
+ match route-type internal
+ set metric 1000000 100 255 255 1500
+route-map OSPF_TO_EIGRP permit 20
+ match route-type nssa-external
+ set metric 500000 500 255 255 1500
+!
+! If any other protocol is ever redistributed into EIGRP, it should be assigned the same, default metric values as OSPF External routes.
+!
+router eigrp TEST_EIGRP
+ !
+ address-family ipv4 unicast autonomous-system 200
+  !
+  topology base
+   default-metric 500000 500 255 255 1500
+   redistribute ospf 1 route-map OSPF_TO_EIGRP
+  exit-af-topology
+  network 3.1.0.0 0.0.0.255
+  network 3.2.0.0 0.0.0.255
+!
+! ABRs receiving external routes from a ASBR need to provide default-information-originate to NOT-DIRECTLY-CONNECTED routers
+area X nssa default-information-originate
+ 
